@@ -44,7 +44,7 @@ q = Queue()
 
 pygame.init()
 
-im = cv2.imread('logoPython.jpg')
+im = cv2.imread('test_image.jpg')
 obj_base64string = codecs.encode(pickle.dumps(im, protocol=pickle.HIGHEST_PROTOCOL), "base64").decode('latin1')
 
 
@@ -612,6 +612,13 @@ class Call:
         self.mute_button = Button()
         self.camera_button = Button()
 
+        self.cam_off = pygame.image.load("image/cam_off.png")
+        self.cam_on = pygame.image.load("image/cam_on.png")
+        self.hang_out_phone = pygame.image.load("image/hang_out_phone.png")
+        self.pick_up_phone = pygame.image.load("image/pick_up_phone.png")
+        self.mic_off = pygame.image.load("image/mic_off.png")
+        self.mic_on = pygame.image.load("image/mic_on.png")
+
     def start_call(self):
         ws.send(f'new_call|'+self.conv)
 
@@ -715,7 +722,6 @@ class Call:
 
     def incoming_call(self):
         pass
-
 
 
 main = Main()
