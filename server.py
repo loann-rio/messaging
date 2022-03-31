@@ -29,7 +29,7 @@ class Server:
         self.conn.commit()
 
         print(pd.DataFrame(self.c.execute('''SELECT username, mail, password FROM log''').fetchall(),
-                           columns=['username', ' mail', 'password']))
+                           columns=['username', 'mail', 'password']))
 
     async def notify_users(self, message, user):
         await user.send(message)
@@ -140,30 +140,14 @@ class Server:
                     self.messageToBeSend.remove(msg)
 
     def check_password(self, request):
-        is_ok = self.c.execute(
-            f'''SELECT
-                        CASE WHEN EXISTS 
-                        (
-                            SELECT username FROM log 
-                            WHERE mail = (?) AND password = (?)
-                        )
-                        THEN 'true'
 
-                        ELSE 'false'
-                    END
-                    ''', [request[1], request[2]]).fetchall()
+        username = self.c.execute('''SELECT username FROM log WHERE mail = (?) AND password = (?)''',
+                                  [request[1], request[2]]).fetchall()
 
-        is_ok = list(is_ok[0])[0]
-
-        if is_ok == 'true':
-            self.c.execute('''SELECT username FROM log 
-                              where mail = (?) AND password = (?)'''
-                           , [request[1], request[2]])
-
-            return list(self.c.fetchall()[0])[0]
-
-        else:
+        if len(list(username)) == 0:
             return 'false'
+        else:
+            return list(username[0])[0]
 
     def new_account(self, request, websocket):
         # request = ['new_account', mail, username, password]
@@ -225,5 +209,3 @@ start_server = websockets.serve(server.handle, "0.0.0.0", 6789)
 asyncio.get_event_loop().run_until_complete(start_server)
 print("server on")
 asyncio.get_event_loop().run_forever()
-
-
